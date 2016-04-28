@@ -1,0 +1,6 @@
+package: github.com/atahani/golang-rest-api-sample
+import:
+- package: github.com/asaskevich/govalidator
+- package: github.com/labstack/echo
+- package: gopkg.in/mcuadros/go-defaults.v1
+- package: github.com/dgrijalva/jwt-go

@@ -1,0 +1,41 @@
+hash: d0c907cd77f5324b91b98501b6f3cbd6a90eb7a4dc66cee87efe1bccb2706d8b
+updated: 2016-04-14T15:08:13.589231839+04:30
+imports:
+- name: github.com/asaskevich/govalidator
+  version: d1e14c504700969ddf41264c7f3e084c7b99de59
+- name: github.com/dgrijalva/jwt-go
+  version: a2c85815a77d0f951e33ba4db5ae93629a1530af
+- name: github.com/labstack/echo
+  version: 11eafe9b901c7598ddbac94294120e5c695941f1
+  subpackages:
+  - engine/standard
+  - middleware
+  - engine
+- name: github.com/labstack/gommon
+  version: f8343700e8769e645b5f9949ec2e3a69f9fd71eb
+  subpackages:
+  - log
+  - color
+- name: github.com/mattn/go-colorable
+  version: 9cbef7c35391cca05f15f8181dc0b18bc9736dbb
+- name: github.com/mattn/go-isatty
+  version: 56b76bdf51f7708750eac80fa38b952bb9f32639
+- name: github.com/valyala/fasttemplate
+  version: 3b874956e03f1636d171bda64b130f9135f42cff
+- name: golang.org/x/net
+  version: fb93926129b8ec0056f2f458b1f519654814edf0
+  subpackages:
+  - context
+- name: golang.org/x/sys
+  version: 324e1375807370c3934e14f3a97e7d160832f6b4
+  subpackages:
+  - unix
+- name: gopkg.in/mcuadros/go-defaults.v1
+  version: ac8540f0fc7e0fb5f1eb9e25c6fd0b8db8f97eed
+- name: gopkg.in/mgo.v2
+  version: b6e2fa371e64216a45e61072a96d4e3859f169da
+  subpackages:
+  - bson
+  - internal/sasl
+  - internal/scram
+devImports: []
