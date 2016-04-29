@@ -5,7 +5,7 @@
 * using [echo](https://labstack.com/echo) as high performance framework
 * implement custom Error Handling 
 * implement OAuth Authentication mechanism
-* using JWT as Token via [jwt-go package](github.com/dgrijalva/jwt-go)
+* using JWT as Token via [jwt-go package](https://github.com/dgrijalva/jwt-go)
 * implement Role base authorization
 * wtire unit test for API endpoint and middlewares
 * using [glide](https://glide.sh) as package manager
