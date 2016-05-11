@@ -165,13 +165,12 @@ func TestGetArticlesOfUser(t *testing.T) {
 	context.Set(user.USER_ID_KEY, userIdObj)
 	if err := articleController.GetArticlesOfUser(context); err != nil {
 		t.Errorf("Error should %q \t but get %q", nil, err)
-	} else {
-		//check have at least one article
-		result := [] models.Article{}
-		if err := json.NewDecoder(res.Body).Decode(&result); err == nil {
-			if len(result) == 0 {
-				t.Error("should at least one article in get articles request")
-			}
+	}
+	//check have at least one article
+	result := [] models.Article{}
+	if err := json.NewDecoder(res.Body).Decode(&result); err == nil {
+		if len(result) == 0 {
+			t.Error("should at least one article in get articles request")
 		}
 	}
 }

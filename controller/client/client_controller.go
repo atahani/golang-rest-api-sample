@@ -148,8 +148,8 @@ func (cc ClientController) GetClients(c echo.Context) error {
 		return specialerror.ErrInternalServerError
 	}
 	//should replace the hashed app key
-	for _, cli := range result {
-		cli.HashedAppKey()
+	for i, cli := range result {
+		result[i].AppKey = cli.HashedAppKey()
 	}
 	c.JSON(http.StatusOK, result)
 	return nil

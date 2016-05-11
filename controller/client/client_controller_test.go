@@ -160,13 +160,12 @@ func TestGetClients(t *testing.T) {
 	context := echo.NewContext(req, res, testingProvider.Echo)
 	if err := clientController.GetClients(context); err != nil {
 		t.Errorf("Error should %q \t but get %q", nil, err)
-	} else {
-		//check the number of clients
-		result := []models.Client{}
-		if err := json.NewDecoder(res.Body).Decode(&result); err == nil {
-			if len(result) == 0 {
-				t.Error("should at least one client in this get clients request !")
-			}
+	}
+	//check the number of clients
+	result := []models.Client{}
+	if err := json.NewDecoder(res.Body).Decode(&result); err == nil {
+		if len(result) == 0 {
+			t.Error("should at least one client in this get clients request !")
 		}
 	}
 }

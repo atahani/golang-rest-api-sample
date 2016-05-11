@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 	"sync"
@@ -65,9 +64,8 @@ func JWTAuthenticationMiddleware(s *mgo.Session, dbName string) echo.MiddlewareF
 					if err := session.DB(dbName).C(ACCESS_TOKEN_COLLECTION_NAME).Find(bson.M{"token": token}).One(&accessToken); err != nil {
 						if err == mgo.ErrNotFound {
 							return he
-						} else {
-							return specialerror.ErrInternalServerError
 						}
+						return specialerror.ErrInternalServerError
 					}
 					//get the user and check is enable or not
 					user := models.User{}
@@ -82,9 +80,8 @@ func JWTAuthenticationMiddleware(s *mgo.Session, dbName string) echo.MiddlewareF
 						c.Set(TRUSTED_APP_ID_KEY, accessToken.TrustedAppId)
 						//process the next and finish this middleware
 						return next(c)
-					} else {
-						return specialerror.ErrUserIsDisable
 					}
+					return specialerror.ErrUserIsDisable
 				}
 			}
 			return he
@@ -107,9 +104,8 @@ func AuthorizeUserByRolesMiddleware(roles []string) echo.MiddlewareFunc {
 				//it's mean the user have all of the roles
 				//process the next and finish this middleware
 				return next(c)
-			} else {
-				return specialerror.ErrInternalServerError
 			}
+			return specialerror.ErrInternalServerError
 		}
 	}
 }
@@ -125,47 +121,45 @@ func (uc UserController) SignUpNewUser(c echo.Context) error {
 	defer session.Copy()
 	//TODO : please NOTE should check is't new email for this user ? if yes ? send verification email to this email
 	//first check is already have user with this email address > unique or not
-	if count, err := session.DB(uc.DBName).C(USER_COLLECTION_NAME).Find(bson.M{"email": strings.ToLower(signUpModel.Email)}).Count(); err != nil {
+	count, err := session.DB(uc.DBName).C(USER_COLLECTION_NAME).Find(bson.M{"email": strings.ToLower(signUpModel.Email)}).Count(); if err != nil {
 		return specialerror.ErrInternalServerError
-	} else if count != 0 {
+	}
+	if count != 0 {
 		return specialerror.ErrAlreadyHaveUserWithThisEmailAddress
 	}
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(signUpModel.Password), bcrypt.DefaultCost)
-	if err != nil {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(signUpModel.Password), bcrypt.DefaultCost); if err != nil {
 		return specialerror.ErrInternalServerError
 	}
 	//check client information is valid or not
 	cliController := client.NewClientController(uc.Session, uc.DBName)
-	if isWebClient, err := cliController.ClientAuthorization(uc.Session, uc.DBName, signUpModel.AppId, signUpModel.AppKey); err != nil {
+	isWebClient, err := cliController.ClientAuthorization(uc.Session, uc.DBName, signUpModel.AppId, signUpModel.AppKey); if err != nil {
 		return err
-	} else {
-		//create new user and assign attributes
-		u := models.User{
-			Id:             bson.NewObjectId(),
-			FirstName:      signUpModel.FirstName,
-			LastName:       signUpModel.LastName,
-			DisplayName:    signUpModel.DisplayName,
-			Email:          strings.ToLower(signUpModel.Email),
-			HashedPassword: string(hashedPassword),
-			Roles:          []string{"user"},
-			JoinedAt:       time.Now(),
-			UpdatedAt:      time.Now(),
-		}
-		//set defaults values for user model
-		defaults.SetDefaults(&u)
-		//store new user into database
-		if err := session.DB(uc.DBName).C(USER_COLLECTION_NAME).Insert(u); err != nil {
-			return specialerror.ErrInternalServerError
-		}
-		//should generate access token and send it
-		if authResponse, err := generateAccessToken(session, uc.DBName, &u, bson.ObjectIdHex(signUpModel.AppId), bson.NewObjectId(), signUpModel.DeviceModel, false, isWebClient); err != nil {
-			return err
-		} else {
-			//return the authentication response
-			c.JSON(http.StatusOK, &authResponse)
-			return nil
-		}
 	}
+	//create new user and assign attributes
+	u := models.User{
+		Id:             bson.NewObjectId(),
+		FirstName:      signUpModel.FirstName,
+		LastName:       signUpModel.LastName,
+		DisplayName:    signUpModel.DisplayName,
+		Email:          strings.ToLower(signUpModel.Email),
+		HashedPassword: string(hashedPassword),
+		Roles:          []string{"user"},
+		JoinedAt:       time.Now(),
+		UpdatedAt:      time.Now(),
+	}
+	//set defaults values for user model
+	defaults.SetDefaults(&u)
+	//store new user into database
+	if err := session.DB(uc.DBName).C(USER_COLLECTION_NAME).Insert(u); err != nil {
+		return specialerror.ErrInternalServerError
+	}
+	//should generate access token and send it
+	authResponse, err := generateAccessToken(session, uc.DBName, &u, bson.ObjectIdHex(signUpModel.AppId), bson.NewObjectId(), signUpModel.DeviceModel, false, isWebClient); if err != nil {
+		return err
+	}
+	//return the authentication response
+	c.JSON(http.StatusOK, &authResponse)
+	return nil
 }
 
 //authenticate the user with credential information email/username with password and generate access token
@@ -182,31 +176,28 @@ func (uc UserController) SignIn(c echo.Context) error {
 	}
 	//check client information is valid or not
 	cliController := client.NewClientController(uc.Session, uc.DBName)
-	if isWebClient, err := cliController.ClientAuthorization(uc.Session, uc.DBName, signInRequest.AppId, signInRequest.AppKey); err != nil {
+	isWebClient, err := cliController.ClientAuthorization(uc.Session, uc.DBName, signInRequest.AppId, signInRequest.AppKey); if err != nil {
 		return err
-	} else {
-		var user models.User
-		//get user by email
-		if err := session.DB(uc.DBName).C(USER_COLLECTION_NAME).Find(bson.M{"email": strings.ToLower(signInRequest.Email)}).One(&user); err != nil {
-			if err == mgo.ErrNotFound {
-				return specialerror.ErrNotValidCredentialInfo
-			} else {
-				return specialerror.ErrInternalServerError
-			}
-		}
-		//check user password with hashed password in db
-		if err := bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(signInRequest.Password)); err != nil {
+	}
+	var user models.User
+	//get user by email
+	if err := session.DB(uc.DBName).C(USER_COLLECTION_NAME).Find(bson.M{"email": strings.ToLower(signInRequest.Email)}).One(&user); err != nil {
+		if err == mgo.ErrNotFound {
 			return specialerror.ErrNotValidCredentialInfo
 		}
-		//it's mean the credential information is valid so should generate JWT token as send it as JSON
-		if authResponse, err := generateAccessToken(session, uc.DBName, &user, bson.ObjectIdHex(signInRequest.AppId), bson.NewObjectId(), signInRequest.DeviceModel, false, isWebClient); err != nil {
-			return err
-		} else {
-			//return the authentication response
-			c.JSON(http.StatusOK, &authResponse)
-			return nil
-		}
+		return specialerror.ErrInternalServerError
 	}
+	//check user password with hashed password in db
+	if err := bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(signInRequest.Password)); err != nil {
+		return specialerror.ErrNotValidCredentialInfo
+	}
+	//it's mean the credential information is valid so should generate JWT token as send it as JSON
+	authResponse, err := generateAccessToken(session, uc.DBName, &user, bson.ObjectIdHex(signInRequest.AppId), bson.NewObjectId(), signInRequest.DeviceModel, false, isWebClient); if err != nil {
+		return err
+	}
+	//return the authentication response
+	c.JSON(http.StatusOK, &authResponse)
+	return nil
 }
 
 //refresh the user access token
@@ -221,34 +212,31 @@ func (ac UserController) RefreshAccessToken(c echo.Context) error {
 	}
 	cliController := client.NewClientController(ac.Session, ac.DBName)
 	//check client information is valid or not
-	if isWebClient, err := cliController.ClientAuthorization(session, ac.DBName, refreshTokenRequest.AppId, refreshTokenRequest.AppKey); err != nil {
+	isWebClient, err := cliController.ClientAuthorization(session, ac.DBName, refreshTokenRequest.AppId, refreshTokenRequest.AppKey); if err != nil {
 		return err
-	} else {
-		//check is refresh token valid or not
-		user := models.User{}
-		if err := session.DB(ac.DBName).C(USER_COLLECTION_NAME).Find(bson.M{"trusted_apps._client": bson.ObjectIdHex(refreshTokenRequest.AppId), "trusted_apps.refresh_token": refreshTokenRequest.RefreshToken}).One(&user); err != nil {
-			if err == mgo.ErrNotFound {
-				return specialerror.ErrRefreshTokenIsNotValid
-			} else {
-				return specialerror.ErrInternalServerError
-			}
+	}
+	//check is refresh token valid or not
+	user := models.User{}
+	if err := session.DB(ac.DBName).C(USER_COLLECTION_NAME).Find(bson.M{"trusted_apps._client": bson.ObjectIdHex(refreshTokenRequest.AppId), "trusted_apps.refresh_token": refreshTokenRequest.RefreshToken}).One(&user); err != nil {
+		if err == mgo.ErrNotFound {
+			return specialerror.ErrRefreshTokenIsNotValid
 		}
-		//get the trusted app
-		var trustedAppId bson.ObjectId
-		for _, trustedApp := range user.TrustedApps {
-			if trustedApp.RefreshToken == refreshTokenRequest.RefreshToken {
-				trustedAppId = trustedApp.Id
-			}
-		}
-		//generate the access token
-		if authResponse, err := generateAccessToken(session, ac.DBName, &user, bson.ObjectIdHex(refreshTokenRequest.AppId), trustedAppId, "", true, isWebClient); err != nil {
-			return err
-		} else {
-			//return the authentication response
-			c.JSON(http.StatusOK, &authResponse)
-			return nil
+		return specialerror.ErrInternalServerError
+	}
+	//get the trusted app
+	var trustedAppId bson.ObjectId
+	for _, trustedApp := range user.TrustedApps {
+		if trustedApp.RefreshToken == refreshTokenRequest.RefreshToken {
+			trustedAppId = trustedApp.Id
 		}
 	}
+	//generate the access token
+	authResponse, err := generateAccessToken(session, ac.DBName, &user, bson.ObjectIdHex(refreshTokenRequest.AppId), trustedAppId, "", true, isWebClient); if err != nil {
+		return err
+	}
+	//return the authentication response
+	c.JSON(http.StatusOK, &authResponse)
+	return nil
 }
 
 //update user model such as email , first, last, display name
@@ -268,10 +256,10 @@ func (uc UserController) UpdateUserProfile(c echo.Context) error {
 	defer session.Close()
 	//TODO : please NOTE should check is't new email for this user ? if yes ? send verification email to this email
 	//check is email address unique or not
-	if count, err := session.DB(uc.DBName).C(USER_COLLECTION_NAME).Find(bson.M{"email": strings.ToLower(u.Email), "_id": bson.M{"$ne": userId}}).Count(); err != nil {
-		fmt.Println(err)
+	count, err := session.DB(uc.DBName).C(USER_COLLECTION_NAME).Find(bson.M{"email": strings.ToLower(u.Email), "_id": bson.M{"$ne": userId}}).Count(); if err != nil {
 		return specialerror.ErrInternalServerError
-	} else if count != 0 {
+	}
+	if count != 0 {
 		return specialerror.ErrAlreadyHaveUserWithThisEmailAddress
 	}
 	userUpdateSet := bson.M{
@@ -348,103 +336,101 @@ func generateAccessToken(s *mgo.Session, dbName string, u *models.User, clientId
 	token.Claims["img"] = u.ImageFileName
 	token.Claims["aid"] = trustedAppId.Hex()
 	token.Claims["tid"] = accessToken.Id.Hex()
-	if sToken, err := token.SignedString([]byte(JWT_SIGNING_KEY_PHRASE)); err != nil {
+	sToken, err := token.SignedString([]byte(JWT_SIGNING_KEY_PHRASE)); if err != nil {
 		return nil, specialerror.ErrInternalServerError
-	} else {
-		//assign access Token
-		accessToken.Token = sToken
-		//generate the refresh token
-		if refreshToken, err := util.GenerateNewRefreshToken(); err != nil {
+	}
+	//assign access Token
+	accessToken.Token = sToken
+	//generate the refresh token
+	refreshToken, err := util.GenerateNewRefreshToken(); if err != nil {
+		return nil, specialerror.ErrInternalServerError
+	}
+	//save trusted app for this user and save the access token in database
+	//check is web client
+	if isRefreshToken {
+		//so already have trusted app for this user
+		foundIt := false
+		for i, trustedApp := range u.TrustedApps {
+			if trustedApp.Id == trustedAppId {
+				foundIt = true
+				u.TrustedApps[i].RefreshToken = refreshToken
+			}
+		}
+		if !foundIt {
 			return nil, specialerror.ErrInternalServerError
+		}
+	} else {
+		if isWebClient {
+			//search in trustedApps have already this webClient
+			foundIt := false
+			for i, trustedApp := range u.TrustedApps {
+				if trustedApp.ClientId == clientId {
+					foundIt = true
+					u.TrustedApps[i].RefreshToken = refreshToken
+				}
+			}
+			if !foundIt {
+				//so should create new trusted app
+				newTrustedAppForWebClient := models.TrustedApp{
+					Id:           trustedAppId,
+					ClientId:     clientId,
+					RefreshToken: refreshToken,
+					GrantedAt:    time.Now(),
+				}
+				//assign this trusted app for web client
+				u.TrustedApps = append(u.TrustedApps, newTrustedAppForWebClient)
+			}
 		} else {
-			//save trusted app for this user and save the access token in database
-			//check is web client
-			if isRefreshToken {
-				//so already have trusted app for this user
-				foundIt := false
-				for _, trustedApp := range u.TrustedApps {
-					if trustedApp.Id == trustedAppId {
-						foundIt = true
-						trustedApp.RefreshToken = refreshToken
-					}
-				}
-				if !foundIt {
-					return nil, specialerror.ErrInternalServerError
-				}
-			} else {
-				if isWebClient {
-					//search in trustedApps have already this webClient
-					foundIt := false
-					for _, trustedApp := range u.TrustedApps {
-						if trustedApp.ClientId == clientId {
-							foundIt = true
-							trustedApp.RefreshToken = refreshToken
-						}
-					}
-					if !foundIt {
-						//so should create new trusted app
-						newTrustedAppForWebClient := models.TrustedApp{
-							Id:           trustedAppId,
-							ClientId:     clientId,
-							RefreshToken: refreshToken,
-							GrantedAt:    time.Now(),
-						}
-						//assign this trusted app for web client
-						u.TrustedApps = append(u.TrustedApps, newTrustedAppForWebClient)
-					}
-				} else {
-					//first check is already have any trusted app with this client and device model
-					foundIt := false
-					for _, trustedApp := range u.TrustedApps {
-						if trustedApp.ClientId == clientId && trustedApp.DeviceModel == deviceModel {
-							foundIt = true
-							trustedApp.RefreshToken = refreshToken
-						}
-					}
-					if !foundIt {
-						//create new trusted app
-						newTrustedApp := models.TrustedApp{
-							Id:           trustedAppId,
-							ClientId:     clientId,
-							RefreshToken: refreshToken,
-							DeviceModel:  deviceModel,
-							GrantedAt:    time.Now(),
-						}
-						//assign this trusted app to user
-						u.TrustedApps = append(u.TrustedApps, newTrustedApp)
-					}
+			//first check is already have any trusted app with this client and device model
+			foundIt := false
+			for i, trustedApp := range u.TrustedApps {
+				if trustedApp.ClientId == clientId && trustedApp.DeviceModel == deviceModel {
+					foundIt = true
+					u.TrustedApps[i].RefreshToken = refreshToken
 				}
 			}
-			var err1, err2 error
-			waitGroup := sync.WaitGroup{}
-			waitGroup.Add(2)
-			go func() {
-				defer waitGroup.Done()
-				//copy the db session
-				session1 := s.Copy()
-				defer session1.Close()
-				//now should save the user
-				err1 = session1.DB(dbName).C(USER_COLLECTION_NAME).UpdateId(u.Id, &u)
-			}()
-			go func() {
-				defer waitGroup.Done()
-				//copy the db session
-				session2 := s.Copy()
-				defer session2.Close()
-				//save access token to db
-				err2 = session2.DB(dbName).C(ACCESS_TOKEN_COLLECTION_NAME).Insert(&accessToken)
-			}()
-			waitGroup.Wait()
-			if err1 != nil || err2 != nil {
-				return nil, specialerror.ErrInternalServerError
+			if !foundIt {
+				//create new trusted app
+				newTrustedApp := models.TrustedApp{
+					Id:           trustedAppId,
+					ClientId:     clientId,
+					RefreshToken: refreshToken,
+					DeviceModel:  deviceModel,
+					GrantedAt:    time.Now(),
+				}
+				//assign this trusted app to user
+				u.TrustedApps = append(u.TrustedApps, newTrustedApp)
 			}
-			AuthResponse := models.AuthenticationResponse{
-				TokenType:    BEARER_AUTHENTICATION_TYPE,
-				AccessToken:  accessToken.Token,
-				ExpiresInMin: expireIn.Minutes(),
-				RefreshToken: refreshToken,
-			}
-			return &AuthResponse, nil
 		}
 	}
+	var err1, err2 error
+	waitGroup := sync.WaitGroup{}
+	waitGroup.Add(2)
+	go func() {
+		defer waitGroup.Done()
+		//copy the db session
+		session1 := s.Copy()
+		defer session1.Close()
+		//now should save the user
+		err1 = session1.DB(dbName).C(USER_COLLECTION_NAME).UpdateId(u.Id, &u)
+	}()
+	go func() {
+		defer waitGroup.Done()
+		//copy the db session
+		session2 := s.Copy()
+		defer session2.Close()
+		//save access token to db
+		err2 = session2.DB(dbName).C(ACCESS_TOKEN_COLLECTION_NAME).Insert(&accessToken)
+	}()
+	waitGroup.Wait()
+	if err1 != nil || err2 != nil {
+		return nil, specialerror.ErrInternalServerError
+	}
+	AuthResponse := models.AuthenticationResponse{
+		TokenType:    BEARER_AUTHENTICATION_TYPE,
+		AccessToken:  accessToken.Token,
+		ExpiresInMin: expireIn.Minutes(),
+		RefreshToken: refreshToken,
+	}
+	return &AuthResponse, nil
 }

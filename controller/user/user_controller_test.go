@@ -518,16 +518,14 @@ func createNewClientInDB(s *mgo.Session, e *echo.Echo) (*models.Client, error) {
 	context := echo.NewContext(req, res, e)
 	if err := clientController.CreateNewClient(context); err != nil {
 		return nil, err
-	} else {
-		//decode the body
-		client := models.Client{}
-		if err := json.NewDecoder(res.Body).Decode(&client); err != nil {
-			return nil, err
-		} else {
-			//return new client information
-			return &client, nil
-		}
 	}
+	//decode the body
+	client := models.Client{}
+	if err := json.NewDecoder(res.Body).Decode(&client); err != nil {
+		return nil, err
+	}
+	//return new client information
+	return &client, nil
 }
 
 func TestMain(m *testing.M) {

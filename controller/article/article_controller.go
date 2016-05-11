@@ -64,9 +64,8 @@ func (ac ArticleController) GetArticleById(c echo.Context) error {
 	if err := session.DB(ac.DBName).C(ARTICLE_COLLECTION_NAME).FindId(bson.ObjectIdHex(c.Param("id"))).One(&article); err != nil {
 		if err == mgo.ErrNotFound {
 			return specialerror.ErrNotFoundAnyItemWithThisId
-		} else {
-			return specialerror.ErrInternalServerError
 		}
+		return specialerror.ErrInternalServerError
 	}
 	//send the article
 	c.JSON(http.StatusOK, article)
@@ -89,9 +88,8 @@ func (ac ArticleController) DeleteArticleById(c echo.Context) error {
 	if err := session.DB(ac.DBName).C(ARTICLE_COLLECTION_NAME).Remove(bson.M{"_id":bson.ObjectIdHex(c.Param("id")), "user_id":userId}); err != nil {
 		if err == mgo.ErrNotFound {
 			return specialerror.ErrNotFoundAnyItemWithThisId
-		} else {
-			return specialerror.ErrInternalServerError
 		}
+		return specialerror.ErrInternalServerError
 	}
 	//inform user that this article removed successfully
 	c.JSON(http.StatusOK, operationresult.SuccessfullyRemoved)
@@ -125,9 +123,8 @@ func (ac ArticleController) UpdateArticleById(c echo.Context) error {
 	if err := session.DB(ac.DBName).C(ARTICLE_COLLECTION_NAME).Update(bson.M{"_id":bson.ObjectIdHex(c.Param("id")), "user_id":userId}, bson.M{"$set":articleUpdateSet}); err != nil {
 		if err == mgo.ErrNotFound {
 			return specialerror.ErrCanNotAccessToTheseResource
-		} else {
-			return specialerror.ErrInternalServerError
 		}
+		return specialerror.ErrInternalServerError
 	}
 	//inform user this article update successfully
 	c.JSON(http.StatusOK, operationresult.SuccessfullyUpdated)
