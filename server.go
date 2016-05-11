@@ -79,6 +79,14 @@ func main() {
 	if err != nil {
 		fmt.Printf("connection %s\n", err)
 	}
+	//check and ensure database indexes
+	mongoSession.DB(mongoDBDialInfo.Database).C(user.ACCESS_TOKEN_COLLECTION_NAME).EnsureIndex(mgo.Index{
+		Key:         []string{"expire_at"},
+		Unique:      false,
+		DropDups:    false,
+		Background:  true,
+		ExpireAfter: time.Second * 1,
+	})
 
 	clientController := client.NewClientController(mongoSession, mongoDBDialInfo.Database)
 	userController := user.NewUserController(mongoSession, mongoDBDialInfo.Database)
