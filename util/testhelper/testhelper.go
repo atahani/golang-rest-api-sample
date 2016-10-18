@@ -1,10 +1,13 @@
 package testhelper
 
 import (
-	"gopkg.in/mgo.v2"
-	"github.com/labstack/echo"
-	"time"
 	"fmt"
+	"time"
+
+	"gopkg.in/mgo.v2"
+
+	"github.com/labstack/echo"
+
 	"github.com/atahani/golang-rest-api-sample/util"
 	"github.com/atahani/golang-rest-api-sample/util/specialerror"
 )

@@ -1,20 +1,23 @@
 package article
 
 import (
-	"github.com/atahani/golang-rest-api-sample/util/testhelper"
-	"testing"
 	"os"
-	"github.com/labstack/echo"
-	"github.com/atahani/golang-rest-api-sample/controller/user"
-	"github.com/labstack/echo/test"
-	"github.com/atahani/golang-rest-api-sample/models"
-	"gopkg.in/mgo.v2/bson"
-	"encoding/json"
-	"github.com/labstack/echo/engine"
-	"github.com/atahani/golang-rest-api-sample/util/specialerror"
-	"bytes"
 	"fmt"
+	"testing"
+	"bytes"
+	"encoding/json"
+
+	"gopkg.in/mgo.v2/bson"
+
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/test"
+	"github.com/labstack/echo/engine"
+
+	"github.com/atahani/golang-rest-api-sample/models"
+	"github.com/atahani/golang-rest-api-sample/util/testhelper"
+	"github.com/atahani/golang-rest-api-sample/util/specialerror"
 	"github.com/atahani/golang-rest-api-sample/util/operationresult"
+	"github.com/atahani/golang-rest-api-sample/controller/user"
 )
 
 var testingProvider testhelper.TestingProvider

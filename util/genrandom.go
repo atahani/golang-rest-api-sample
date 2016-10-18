@@ -2,10 +2,10 @@ package util
 
 import (
 	"io"
-	mrand "math/rand"
 	"time"
-	"crypto/rand"
 	"fmt"
+	mrand "math/rand"
+	"crypto/rand"
 )
 
 var stdCharsType1 = []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*")
