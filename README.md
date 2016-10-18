@@ -1,34 +1,34 @@
 ## REST API Sample Write in Go
 
-### project features
+### Project Features
 
-* using [echo](https://labstack.com/echo) as high performance framework
-* implement custom Error Handling 
-* implement OAuth Authentication mechanism
-* using JWT as Token via [jwt-go package](https://github.com/dgrijalva/jwt-go)
-* implement Role base authorization
-* wtire unit test for API endpoint and middlewares
-* using [glide](https://glide.sh) as package manager
+* Using [echo](https://labstack.com/echo) as high performance framework
+* Implement custom Error Handling
+* Implement OAuth Authentication mechanism
+* Using JWT as Token via [jwt-go package](https://github.com/dgrijalva/jwt-go)
+* Implement Role base authorization
+* Write unit test for API endpoint and middlewares
+* Using [glide](https://glide.sh) as package manager
 
-### project dependencies
-1. install Golang run and tested in Go 1.6 
-2. install [Glide](https://github.com/Masterminds/glide) as package manager
-3. have MongoDB instance in your localhost for store data
+### Project Dependencies
+1. Install Golang (tested with Go 1.6)
+2. Install [Glide](https://github.com/Masterminds/glide) as package manager
+3. Install and run MongoDB service on your localhost for storing data
 
 
-### how to use from this sample project
-##### clone the repository
+### How to use from this sample project
+##### Clone the repository
 ```
 git clone https://github.com/atahani/golang-rest-api-sample.git
 cd golang-rest-api-sample
 ```
 
-##### install dependencies via glide
+##### Install dependencies via glide
 ```
 glide install
 ```
 
-##### build, serve or test using make
+##### Build, serve or test using make
 
 ```
 make build
