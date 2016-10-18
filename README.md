@@ -7,13 +7,13 @@
 * implement OAuth Authentication mechanism
 * using JWT as Token via [jwt-go package](https://github.com/dgrijalva/jwt-go)
 * implement Role base authorization
-* wtire unit test for API endpoint and middlewares
+* write unit test for API endpoint and middlewares
 * using [glide](https://glide.sh) as package manager
 
 ### project dependencies
 1. install Golang run and tested in Go 1.6 
 2. install [Glide](https://github.com/Masterminds/glide) as package manager
-3. have MongoDB instance in your localhost for store data
+3. have MongoDB instance in your localhost for storing data
 
 
 ### how to use from this sample project
