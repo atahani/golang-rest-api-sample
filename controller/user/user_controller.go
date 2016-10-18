@@ -1,22 +1,24 @@
 package user
 
 import (
-	"net/http"
-	"strings"
-	"sync"
 	"time"
+	"sync"
+	"strings"
+	"net/http"
+
+	"golang.org/x/crypto/bcrypt"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
+	"gopkg.in/mcuadros/go-defaults.v1"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/labstack/echo"
 
 	"github.com/atahani/golang-rest-api-sample/controller/client"
 	"github.com/atahani/golang-rest-api-sample/models"
 	"github.com/atahani/golang-rest-api-sample/util"
 	"github.com/atahani/golang-rest-api-sample/util/operationresult"
 	"github.com/atahani/golang-rest-api-sample/util/specialerror"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/labstack/echo"
-	"golang.org/x/crypto/bcrypt"
-	"gopkg.in/mcuadros/go-defaults.v1"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 )
 
 const (

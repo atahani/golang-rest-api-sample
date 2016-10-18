@@ -1,15 +1,18 @@
 package article
 
 import (
-	"github.com/atahani/golang-rest-api-sample/controller/user"
-	"github.com/labstack/echo"
-	"gopkg.in/mgo.v2"
-	"github.com/atahani/golang-rest-api-sample/util/specialerror"
-	"gopkg.in/mgo.v2/bson"
-	"github.com/atahani/golang-rest-api-sample/models"
 	"time"
 	"net/http"
+
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
+
+	"github.com/labstack/echo"
+
+	"github.com/atahani/golang-rest-api-sample/models"
+	"github.com/atahani/golang-rest-api-sample/util/specialerror"
 	"github.com/atahani/golang-rest-api-sample/util/operationresult"
+	"github.com/atahani/golang-rest-api-sample/controller/user"
 )
 
 const (

@@ -2,17 +2,20 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"time"
+
+	"gopkg.in/mgo.v2"
+
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/engine/standard"
+	"github.com/labstack/echo/middleware"
+
 	"github.com/atahani/golang-rest-api-sample/controller/article"
 	"github.com/atahani/golang-rest-api-sample/controller/client"
 	"github.com/atahani/golang-rest-api-sample/controller/user"
 	"github.com/atahani/golang-rest-api-sample/util"
 	"github.com/atahani/golang-rest-api-sample/util/specialerror"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/standard"
-	"github.com/labstack/echo/middleware"
-	"gopkg.in/mgo.v2"
-	"os"
-	"time"
 )
 
 func main() {

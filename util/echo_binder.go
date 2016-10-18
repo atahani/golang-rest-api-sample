@@ -1,12 +1,14 @@
 package util
 
 import (
-	"github.com/labstack/echo"
 	"strings"
-	"encoding/json"
-	"github.com/atahani/golang-rest-api-sample/util/specialerror"
 	"reflect"
+	"encoding/json"
+
+	"github.com/labstack/echo"
 	"github.com/asaskevich/govalidator"
+
+	"github.com/atahani/golang-rest-api-sample/util/specialerror"
 )
 
 //this is custom bind function for echo to validate struct

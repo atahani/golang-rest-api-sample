@@ -1,15 +1,18 @@
 package client
 
 import (
+	"time"
+	"net/http"
+
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"github.com/atahani/golang-rest-api-sample/util/specialerror"
-	"github.com/atahani/golang-rest-api-sample/models"
-	"github.com/labstack/echo"
 	"gopkg.in/mcuadros/go-defaults.v1"
-	"time"
+
+	"github.com/labstack/echo"
+
+	"github.com/atahani/golang-rest-api-sample/models"
 	"github.com/atahani/golang-rest-api-sample/util"
-	"net/http"
+	"github.com/atahani/golang-rest-api-sample/util/specialerror"
 	"github.com/atahani/golang-rest-api-sample/util/operationresult"
 )
 

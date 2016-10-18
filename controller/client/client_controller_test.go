@@ -1,19 +1,20 @@
 package client
 
 import (
+	"os"
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"testing"
+	"encoding/json"
+
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/engine"
+	"github.com/labstack/echo/test"
 
 	"github.com/atahani/golang-rest-api-sample/models"
 	"github.com/atahani/golang-rest-api-sample/util/operationresult"
 	"github.com/atahani/golang-rest-api-sample/util/specialerror"
 	"github.com/atahani/golang-rest-api-sample/util/testhelper"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine"
-	"github.com/labstack/echo/test"
-	"os"
 )
 
 var testingProvider testhelper.TestingProvider
